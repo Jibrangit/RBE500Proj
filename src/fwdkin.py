@@ -1,4 +1,3 @@
-
 #! /usr/bin/env python
 
 #subscribes to the joint values topic ead from gazebo
@@ -7,12 +6,20 @@
 
 import rospy
 from std_msgs.msg import String
+import numpy as np
+from geometry_msgs.msg import Pose
+from sensor_msgs.msg import JointState
+from math import pi
 
 def Forward_kinematics(msg):
 
     theta1 = msg.position[0]
     theta2 = msg.position[1]
     d3 = msg.position[2]
+
+    L1 = 2
+    L2 = 2
+    L3 = 3
 
     T = {}
     thetas = np.empty(3)
@@ -49,6 +56,7 @@ def Forward_kinematics(msg):
     End_effector_Actual.publish(EEF)
 
     print('Verified positions are: ', np.round(EEF.position.x), np.round(EEF.position.y), np.round(EEF.position.z))
+
 def DH_matrix(theta, d, a, alpha):
     T_theta = [[np.cos(theta), -np.sin(theta), 0, 0],
                 [np.sin(theta), np.cos(theta), 0, 0],
@@ -71,6 +79,7 @@ def DH_matrix(theta, d, a, alpha):
 
     T = np.matmul(np.matmul(T_theta, T_d), np.matmul(T_a, T_alpha))
     return T
+
 if __name__ == '__main__':
 
     rospy.init_node('fwdkin')    
